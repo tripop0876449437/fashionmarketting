@@ -1,0 +1,118 @@
+/* รีเซ็ต CSS */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f9f9f9;
+}
+
+/* Navbar */
+.navbar {
+  background-color: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.navbar .menu {
+  display: flex;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.navbar .menu li {
+  margin: 0 10px;
+}
+
+.navbar .menu a {
+  text-decoration: none;
+  color: #333;
+  padding: 5px 10px;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+.navbar .menu a.active,
+.navbar .menu a:hover {
+  background-color: #333;
+  color: #fff;
+}
+
+/* Content */
+.content {
+  max-width: 600px;
+  width: 100%;
+  margin: 20px auto;
+  padding: 20px;
+  background-color: #e0e0e0;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+/* Feedback Form */
+.feedback-form .form-group {
+  margin-bottom: 15px;
+}
+
+.feedback-form label {
+  font-weight: bold;
+  display: block;
+  margin-bottom: 5px;
+}
+
+.feedback-form input,
+.feedback-form textarea,
+.feedback-form select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 1rem;
+  box-sizing: border-box; /* ป้องกัน overflow */
+}
+
+.feedback-form textarea {
+  resize: vertical; /* อนุญาตให้ขยายเฉพาะแนวตั้ง */
+  height: 100px;
+}
+
+/* Form Buttons */
+.form-buttons {
+  display: flex;
+  justify-content: space-between; /* ปุ่มตกลงและล้างข้อมูล */
+  margin-top: 20px;
+}
+
+.btn-submit,
+.btn-reset {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  width: calc(48%); /* ขนาดปุ่ม 48% ของพื้นที่ */
+}
+
+.btn-submit {
+  background-color: #333;
+  color: #fff;
+  transition: background-color 0.3s;
+}
+
+.btn-submit:hover {
+  background-color: #555;
+}
+
+.btn-reset {
+  background-color: #ccc;
+  color: #000;
+  transition: background-color 0.3s;
+}
+
+.btn-reset:hover {
+  background-color: #ddd;
+}
