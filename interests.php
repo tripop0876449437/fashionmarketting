@@ -1,35 +1,71 @@
 <?php
-require 'db.php';
+require 'db.php'; // เชื่อมต่อฐานข้อมูล
 
 // ดึงข้อมูลหมวดหมู่สินค้า
-$categoriesQuery = $pdo->query("SELECT name FROM categories");
+$categoriesQuery = $pdo->query("SELECT * FROM categories");
 $categories = $categoriesQuery->fetchAll(PDO::FETCH_ASSOC);
 
-if (!$categories) {
-    $categories = [['name' => 'ไม่มีข้อมูลหมวดหมู่']];
-}
-
 // ดึงข้อมูลตัวกรอง (ช่วงอายุและราคา)
-$filtersQuery = $pdo->query("SELECT age_range, price FROM filters");
+$filtersQuery = $pdo->query("SELECT * FROM filters");
 $filters = $filtersQuery->fetchAll(PDO::FETCH_ASSOC);
 
-if (!$filters) {
-    $ageRanges = ['ไม่มีข้อมูลช่วงอายุ'];
-    $prices = ['ไม่มีข้อมูลราคา'];
-} else {
-    $ageRanges = array_column($filters, 'age_range');
-    $prices = array_column($filters, 'price');
+// แยกค่า age_range และ price ออกจาก filters
+$ageRanges = $filters ? array_column($filters, 'age_range') : ['ไม่มีข้อมูลช่วงอายุ'];
+$prices = $filters ? array_column($filters, 'price') : ['ไม่มีข้อมูลราคา'];
+
+// คำสั่ง SQL พื้นฐาน (แสดงสินค้าทั้งหมด)
+$sql = "
+    SELECT products.*, categories.name AS category_name
+    FROM products
+    JOIN categories ON products.category_id = categories.id
+    WHERE 1
+";
+
+// เก็บเงื่อนไขตัวกรอง
+$conditions = [];
+$params = [];
+
+// ตรวจสอบว่ามีการส่งฟอร์มหรือไม่
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    if (!empty($_POST['category'])) {
+        $conditions[] = "categories.name = :category";
+        $params['category'] = $_POST['category'];
+    }
+    if (!empty($_POST['gender'])) {
+        $conditions[] = "products.gender = :gender";
+        $params['gender'] = $_POST['gender'];
+    }
+    if (!empty($_POST['age_range'])) {
+        $conditions[] = "products.age_range = :age_range";
+        $params['age_range'] = $_POST['age_range'];
+    }
+    if (!empty($_POST['price'])) {
+        $conditions[] = "products.price <= :price";
+        $params['price'] = preg_replace('/[^0-9.]/', '', $_POST['price']);
+    }
 }
+
+// ถ้ามีตัวกรอง ให้เพิ่ม `WHERE`
+if (!empty($conditions)) {
+    $sql .= " AND " . implode(" AND ", $conditions);
+}
+
+// ดึงข้อมูลสินค้า
+$stmt = $pdo->prepare($sql);
+$stmt->execute($params);
+$products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <!DOCTYPE html>
 <html lang="th">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ความสนใจ</title>
     <link rel="stylesheet" href="css/interests.css">
 </head>
+
 <body>
     <!-- Navbar -->
     <nav class="navbar">
@@ -41,17 +77,28 @@ if (!$filters) {
             <li><a href="feedback.php">Feedback</a></li>
             <li><a href="about.php">About</a></li>
         </ul>
-        <div class="profile-icon">👤</div>
+        <!-- Profile Icon -->
+        <div class="profile-container">
+            <div class="profile-icon">👤</div>
+            <ul class="profile-menu">
+                <li><a href="#">โปรไฟล์</a></li>
+                <li><a href="#">การตั้งค่า</a></li>
+                <li><a href="add_product.php">เพิ่มสินค้า</a></li>
+                <li><a href="#">ออกจากระบบ</a></li>
+            </ul>
+        </div>
     </nav>
 
     <!-- Content -->
     <div class="content">
         <h1 class="page-title">ตัวเลือกหมวดหมู่</h1>
+
         <form action="interests.php" method="POST" class="filter-form">
             <!-- หมวดหมู่ -->
             <div class="form-group">
                 <label for="category">หมวดหมู่สินค้า:</label>
                 <select id="category" name="category">
+                    <option value="">-- แสดงทั้งหมด --</option>
                     <?php foreach ($categories as $category): ?>
                         <option value="<?= htmlspecialchars($category['name']) ?>">
                             <?= htmlspecialchars($category['name']) ?>
@@ -64,6 +111,7 @@ if (!$filters) {
             <div class="form-group">
                 <label for="gender">เพศ:</label>
                 <select id="gender" name="gender">
+                    <option value="">-- แสดงทั้งหมด --</option>
                     <option value="ชาย">ชาย</option>
                     <option value="หญิง">หญิง</option>
                     <option value="อื่น ๆ">อื่น ๆ</option>
@@ -74,6 +122,7 @@ if (!$filters) {
             <div class="form-group">
                 <label for="age_range">ช่วงอายุ:</label>
                 <select id="age_range" name="age_range">
+                    <option value="">-- แสดงทั้งหมด --</option>
                     <?php foreach ($ageRanges as $age): ?>
                         <option value="<?= htmlspecialchars($age) ?>">
                             <?= htmlspecialchars($age) ?>
@@ -86,6 +135,7 @@ if (!$filters) {
             <div class="form-group">
                 <label for="price">ราคา:</label>
                 <select id="price" name="price">
+                    <option value="">-- แสดงทั้งหมด --</option>
                     <?php foreach ($prices as $price): ?>
                         <option value="<?= htmlspecialchars($price) ?>">
                             <?= htmlspecialchars($price) ?>
@@ -100,6 +150,46 @@ if (!$filters) {
                 <button type="reset" class="btn-reset">ล้างข้อมูล</button>
             </div>
         </form>
+
+        <!-- แสดงสินค้าที่ค้นหา -->
+        <br>
+        <h2>ผลการค้นหา</h2>
+        <div class="product-list">
+            <?php if (count($products) > 0): ?>
+                <?php foreach ($products as $product): ?>
+                    <div class="product-card">
+                        <img src="<?= htmlspecialchars($product['image']) ?>" alt="<?= htmlspecialchars($product['name']) ?>" width="100%">
+                        <h3><?= htmlspecialchars($product['name']) ?></h3>
+                        <p>หมวดหมู่: <?= htmlspecialchars($product['category_name']) ?></p>
+                        <p>ราคา: <?= number_format($product['price'], 2) ?> บาท</p>
+                        <p>คะแนนรีวิว: <?= str_repeat('⭐', round($product['review_rating'])) ?></p>
+
+                    </div>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <p class="no-results">ไม่พบสินค้าที่ตรงกับตัวกรองของคุณ</p>
+            <?php endif; ?>
+        </div>
     </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const profileIcon = document.querySelector(".profile-icon");
+            const profileMenu = document.querySelector(".profile-menu");
+
+            // แสดง/ซ่อนเมนูเมื่อคลิกที่ไอคอน
+            profileIcon.addEventListener("click", function() {
+                profileMenu.style.display = profileMenu.style.display === "block" ? "none" : "block";
+            });
+
+            // ปิดเมนูเมื่อคลิกที่อื่น
+            document.addEventListener("click", function(e) {
+                if (!profileIcon.contains(e.target) && !profileMenu.contains(e.target)) {
+                    profileMenu.style.display = "none";
+                }
+            });
+        });
+    </script>
 </body>
+
 </html>

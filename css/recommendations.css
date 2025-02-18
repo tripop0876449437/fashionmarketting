@@ -1,19 +1,20 @@
 /* รีเซ็ต CSS */
 body {
   margin: 0;
-  padding: 0;
+  padding: 20px;
   font-family: Arial, sans-serif;
   background-color: #f9f9f9;
 }
 
-/* Navbar */
+/* 🌍 Navbar */
 .navbar {
   background-color: #fff;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 20px;
+  padding: 15px 20px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
 }
 
 .navbar .menu {
@@ -119,4 +120,60 @@ body {
   text-align: center;
   font-size: 1.2rem;
   color: #777;
+}
+
+
+
+/* Profile Container */
+.profile-container {
+  position: relative;
+  display: inline-block;
+}
+
+/* Profile Icon */
+.profile-icon {
+  font-size: 1.5rem;
+  cursor: pointer;
+  background-color: #f0f0f0;
+  border-radius: 50%;
+  padding: 10px;
+  transition: background-color 0.3s;
+}
+
+.profile-icon:hover {
+  background-color: #ddd;
+}
+
+/* Profile Menu */
+.profile-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  list-style: none;
+  padding: 10px 0;
+  margin: 0;
+  display: none; /* ซ่อนเมนูโดยค่าเริ่มต้น */
+}
+
+.profile-menu li {
+  padding: 10px 20px;
+  white-space: nowrap;
+}
+
+.profile-menu li:hover {
+  background-color: #f0f0f0;
+}
+
+.profile-menu a {
+  text-decoration: none;
+  color: #333;
+  display: block;
+}
+
+.profile-menu a:hover {
+  color: #000;
 }

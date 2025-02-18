@@ -13,12 +13,14 @@ $products = $query->fetchAll(PDO::FETCH_ASSOC);
 
 <!DOCTYPE html>
 <html lang="th">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>คำแนะนำ</title>
     <link rel="stylesheet" href="css/recommendations.css">
 </head>
+
 <body>
     <!-- Navbar -->
     <nav class="navbar">
@@ -30,7 +32,16 @@ $products = $query->fetchAll(PDO::FETCH_ASSOC);
             <li><a href="feedback.php">Feedback</a></li>
             <li><a href="about.php">About</a></li>
         </ul>
-        <div class="profile-icon">👤</div>
+        <!-- Profile Icon -->
+        <div class="profile-container">
+            <div class="profile-icon">👤</div>
+            <ul class="profile-menu">
+                <li><a href="#">โปรไฟล์</a></li>
+                <li><a href="#">การตั้งค่า</a></li>
+                <li><a href="add_product.php">เพิ่มสินค้า</a></li>
+                <li><a href="#">ออกจากระบบ</a></li>
+            </ul>
+        </div>
     </nav>
 
     <!-- Content -->
@@ -43,8 +54,7 @@ $products = $query->fetchAll(PDO::FETCH_ASSOC);
                 type="text"
                 name="search"
                 placeholder="ค้นหา: เช่น รองเท้า"
-                value="<?= htmlspecialchars($search) ?>"
-            >
+                value="<?= htmlspecialchars($search) ?>">
             <button type="submit">🔍</button>
         </form>
 
@@ -67,5 +77,26 @@ $products = $query->fetchAll(PDO::FETCH_ASSOC);
             <?php endif; ?>
         </div>
     </div>
+    
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const profileIcon = document.querySelector(".profile-icon");
+            const profileMenu = document.querySelector(".profile-menu");
+
+            // แสดง/ซ่อนเมนูเมื่อคลิกที่ไอคอน
+            profileIcon.addEventListener("click", function() {
+                profileMenu.style.display = profileMenu.style.display === "block" ? "none" : "block";
+            });
+
+            // ปิดเมนูเมื่อคลิกที่อื่น
+            document.addEventListener("click", function(e) {
+                if (!profileIcon.contains(e.target) && !profileMenu.contains(e.target)) {
+                    profileMenu.style.display = "none";
+                }
+            });
+        });
+    </script>
+
 </body>
+
 </html>

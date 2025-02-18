@@ -1,0 +1,181 @@
+/* รีเซ็ตค่าเริ่มต้นของ HTML */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: "Poppins", sans-serif;
+}
+
+/* พื้นหลัง */
+body {
+  background: linear-gradient(to right, #f8f9fa, #e9ecef);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+/* Container หลัก */
+.add-product-container {
+  max-width: 600px;
+  width: 100%;
+  background: white;
+  padding: 25px;
+  border-radius: 15px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+/* หัวข้อ */
+.add-product-container h2 {
+  font-size: 1.8rem;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+/* ฟอร์ม */
+.add-product-form {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ช่องกรอกข้อมูล */
+.add-product-form label {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 5px;
+  text-align: left;
+}
+
+/* กล่องกรอกข้อมูล */
+.input-group {
+  position: relative;
+  margin-bottom: 15px;
+}
+
+.add-product-form input,
+.add-product-form select {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.3s ease-in-out;
+}
+
+.add-product-form input:focus,
+.add-product-form select:focus {
+  border-color: #28a745;
+  outline: none;
+  box-shadow: 0px 0px 5px rgba(40, 167, 69, 0.5);
+}
+
+/* ปุ่มกากบาท (x) */
+.clear-btn {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: #777;
+  transition: color 0.3s ease-in-out;
+}
+
+.clear-btn:hover {
+  color: #333;
+}
+
+/* ปุ่มทั้งหมด */
+.form-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+/* ปุ่มพื้นฐาน */
+.btn-submit, .btn-reset, .btn-home {
+  flex: 1;
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.3s ease-in-out;
+  text-decoration: none;
+  display: inline-block;
+}
+
+/* ปุ่มตกลง */
+.btn-submit {
+  background-color: #28a745;
+  color: white;
+  margin-right: 10px;
+}
+
+.btn-submit:hover {
+  background-color: #218838;
+}
+
+/* ปุ่มล้างข้อมูล */
+.btn-reset {
+  background-color: #dc3545;
+  color: white;
+}
+
+.btn-reset:hover {
+  background-color: #c82333;
+}
+
+/* ปุ่มไปที่หน้าแรก */
+.btn-home {
+  background-color: #007bff;
+  color: white;
+  text-decoration: none;
+  text-align: center;
+}
+
+.btn-home:hover {
+  background-color: #0056b3;
+}
+
+
+/* ข้อความแจ้งเตือน */
+.success-message,
+.error-message {
+  text-align: center;
+  font-weight: bold;
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 15px;
+}
+
+.success-message {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.error-message {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .add-product-container {
+    padding: 20px;
+  }
+  .form-buttons {
+    flex-direction: column;
+  }
+  .btn-submit,
+  .btn-reset {
+    margin: 5px 0;
+  }
+}

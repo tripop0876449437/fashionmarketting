@@ -44,5 +44,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <button type="submit">เพิ่มสินค้า</button>
     </form>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const profileIcon = document.querySelector(".profile-icon");
+            const profileMenu = document.querySelector(".profile-menu");
+
+            // แสดง/ซ่อนเมนูเมื่อคลิกที่ไอคอน
+            profileIcon.addEventListener("click", function() {
+                profileMenu.style.display = profileMenu.style.display === "block" ? "none" : "block";
+            });
+
+            // ปิดเมนูเมื่อคลิกที่อื่น
+            document.addEventListener("click", function(e) {
+                if (!profileIcon.contains(e.target) && !profileMenu.contains(e.target)) {
+                    profileMenu.style.display = "none";
+                }
+            });
+        });
+    </script>
 </body>
 </html>
