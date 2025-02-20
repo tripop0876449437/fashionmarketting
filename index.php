@@ -29,10 +29,10 @@ $products = $query->fetchAll(PDO::FETCH_ASSOC);
         <div class="profile-container">
             <div class="profile-icon">👤</div>
             <ul class="profile-menu">
-                <li><a href="#">โปรไฟล์</a></li>
-                <li><a href="#">การตั้งค่า</a></li>
+                <!-- <li><a href="#">โปรไฟล์</a></li> -->
+                <!-- <li><a href="#">การตั้งค่า</a></li> -->
                 <li><a href="add_product.php">เพิ่มสินค้า</a></li>
-                <li><a href="#">ออกจากระบบ</a></li>
+                <!-- <li><a href="#">ออกจากระบบ</a></li> -->
             </ul>
         </div>
     </nav>

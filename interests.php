@@ -81,10 +81,10 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <div class="profile-container">
             <div class="profile-icon">👤</div>
             <ul class="profile-menu">
-                <li><a href="#">โปรไฟล์</a></li>
-                <li><a href="#">การตั้งค่า</a></li>
+                <!-- <li><a href="#">โปรไฟล์</a></li>
+                <li><a href="#">การตั้งค่า</a></li> -->
                 <li><a href="add_product.php">เพิ่มสินค้า</a></li>
-                <li><a href="#">ออกจากระบบ</a></li>
+                <!-- <li><a href="#">ออกจากระบบ</a></li> -->
             </ul>
         </div>
     </nav>
@@ -162,7 +162,7 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <h3><?= htmlspecialchars($product['name']) ?></h3>
                         <p>หมวดหมู่: <?= htmlspecialchars($product['category_name']) ?></p>
                         <p>ราคา: <?= number_format($product['price'], 2) ?> บาท</p>
-                        <p>คะแนนรีวิว: <?= str_repeat('⭐', round($product['review_rating'])) ?></p>
+                        <p>คะแนนรีวิวเริ่มต้น: <?= str_repeat('⭐', round($product['review_rating'])) ?></p>
 
                     </div>
                 <?php endforeach; ?>

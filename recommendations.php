@@ -1,15 +1,22 @@
 <?php
 require 'db.php';
 
-// ดึงข้อมูลสินค้า (รองเท้า) จากฐานข้อมูล
-$search = $_GET['search'] ?? ''; // รับค่าการค้นหาจาก GET
+// รับค่าการค้นหาจาก GET
+$search = $_GET['search'] ?? '';
+
+// ค้นหาข้อมูลจาก `suggestions` ที่เชื่อมกับ `products`
 $query = $pdo->prepare("
-    SELECT * FROM recommendations
-    WHERE name LIKE :search OR category LIKE :search
+    SELECT s.messages, s.review_score, s.created_at, 
+           p.id AS product_id, p.name, p.image, p.price
+    FROM suggestions s
+    JOIN products p ON s.product_id = p.id
+    WHERE p.name LIKE :search OR s.messages LIKE :search
+    ORDER BY s.created_at DESC
 ");
 $query->execute(['search' => "%$search%"]);
-$products = $query->fetchAll(PDO::FETCH_ASSOC);
+$suggestions = $query->fetchAll(PDO::FETCH_ASSOC);
 ?>
+
 
 <!DOCTYPE html>
 <html lang="th">
@@ -24,10 +31,13 @@ $products = $query->fetchAll(PDO::FETCH_ASSOC);
 <body>
     <!-- Navbar -->
     <nav class="navbar">
-        <div class="logo">Logo</div>
+        <div class="logo">
+            <!-- <img src="images/logo.png" alt="Logo"> -->
+            Logo  
+        </div>
         <ul class="menu">
             <li><a href="index.php">หน้าแรก</a></li>
-            <li><a href="interests.php">หน้าสินค้า</a></li>
+            <li><a href="interests.php">ความสนใจ</a></li>
             <li><a href="recommendations.php" class="active">คำแนะนำ</a></li>
             <li><a href="feedback.php">Feedback</a></li>
             <li><a href="about.php">About</a></li>
@@ -36,10 +46,10 @@ $products = $query->fetchAll(PDO::FETCH_ASSOC);
         <div class="profile-container">
             <div class="profile-icon">👤</div>
             <ul class="profile-menu">
-                <li><a href="#">โปรไฟล์</a></li>
-                <li><a href="#">การตั้งค่า</a></li>
+                <!-- <li><a href="#">โปรไฟล์</a></li>
+                <li><a href="#">การตั้งค่า</a></li> -->
                 <li><a href="add_product.php">เพิ่มสินค้า</a></li>
-                <li><a href="#">ออกจากระบบ</a></li>
+                <!-- <li><a href="#">ออกจากระบบ</a></li> -->
             </ul>
         </div>
     </nav>
@@ -61,23 +71,27 @@ $products = $query->fetchAll(PDO::FETCH_ASSOC);
         <!-- คำแนะนำโฆษณา -->
         <button class="btn-ad">คำแนะนำโฆษณา</button>
 
-        <!-- รายการสินค้า -->
+        <!-- รายการข้อเสนอแนะ -->
+        <h2>รายการข้อเสนอแนะ</h2>
         <div class="product-list">
-            <?php if ($products): ?>
-                <?php foreach ($products as $product): ?>
+            <?php if ($suggestions): ?>
+                <?php foreach ($suggestions as $suggestion): ?>
                     <div class="product-card">
-                        <img src="<?= htmlspecialchars($product['image']) ?>" alt="<?= htmlspecialchars($product['name']) ?>">
-                        <h3><?= htmlspecialchars($product['name']) ?></h3>
-                        <p>ราคา <?= htmlspecialchars($product['price']) ?> บาท</p>
-                        <p>รีวิว: <?= str_repeat('⭐', floor($product['review_rating'])) ?></p>
+                        <img src="<?= htmlspecialchars($suggestion['image']) ?>" alt="<?= htmlspecialchars($suggestion['name']) ?>">
+                        <h3><?= htmlspecialchars($suggestion['name']) ?></h3>
+                        <p>ราคา <?= number_format($suggestion['price'], 2) ?> บาท</p>
+                        <p>คะแนนรีวิว: <?= str_repeat('⭐', round($suggestion['review_score'])) ?></p>
+                        <p><strong>รีวิว: </strong>:</strong> <?= htmlspecialchars($suggestion['messages']) ?></p>
+                        <p class="date">วันที่แนะนำ: <?= date("d/m/Y H:i", strtotime($suggestion['created_at'])) ?> น.</p>
                     </div>
                 <?php endforeach; ?>
             <?php else: ?>
-                <p class="no-results">ไม่พบสินค้าที่คุณค้นหา</p>
+                <p class="no-results">ไม่พบข้อเสนอแนะที่ตรงกับคำค้นหา</p>
             <?php endif; ?>
         </div>
+
     </div>
-    
+
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             const profileIcon = document.querySelector(".profile-icon");

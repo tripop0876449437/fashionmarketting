@@ -93,7 +93,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       </div>
 
       <!-- คะแนนรีวิว -->
-      <label for="review_rating">คะแนนรีวิว (0 - 5 ดาว):</label>
+      <label for="review_rating">คะแนนรีวิวเริ่มต้น (0 - 5 ดาว):</label>
       <div class="input-group">
         <input type="number" id="review_rating" name="review_rating" step="0.1" min="0" max="5" required>
         <button type="button" class="clear-btn" onclick="clearInput('review_rating')">✖</button>

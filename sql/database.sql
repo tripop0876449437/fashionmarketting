@@ -97,10 +97,14 @@ INSERT INTO feedback (product_name, comments, review_score) VALUES
 
 CREATE TABLE suggestions (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    message TEXT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    product_id INT NOT NULL,
+    messages TEXT NOT NULL,
+    review_score INT CHECK (review_score BETWEEN 1 AND 5),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
 );
 
-INSERT INTO suggestions (message) VALUES
-('ขอบคุณสำหรับข้อเสนอแนะของคุณ!');
+
+INSERT INTO suggestions (product_id, messages, review_score) VALUES
+(1, 'ขอบคุณสำหรับข้อเสนอแนะของคุณ!', 5);
 
