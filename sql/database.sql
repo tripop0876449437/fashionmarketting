@@ -35,15 +35,18 @@ CREATE TABLE products (
     age_range VARCHAR(255) DEFAULT '14 - 18 ปี',
     price DECIMAL(10,2) NOT NULL,
     image VARCHAR(255) NOT NULL,
+    color VARCHAR(255) NOT NULL DEFAULT 'สีดำ',
+    preference ENUM('like', 'disliked') NULL,
+    brand VARCHAR(255) NOT NULL DEFAULT 'ไม่ระบุ',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     review_rating FLOAT DEFAULT 0,
     FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE
 );
 
-INSERT INTO products (name, category_id, gender, age_range, price, image, review_rating) VALUES
-('รองเท้าผ้าใบ Nike', 1, 'ชาย', '14 - 18 ปี', 2999.00, 'images/nike.jpg', 4.5),
-('รองเท้า Adidas', 1, 'ชาย', '19 - 25 ปี', 2590.00, 'images/adidas.jpg', 4.2),
-('รองเท้า Converse', 1, 'ชาย', '26 - 35 ปี', 1890.00, 'images/converse.jpg', 4.8);
+INSERT INTO products (name, category_id, gender, age_range, price, image, review_rating, color, preference, brand) VALUES
+('รองเท้าผ้าใบ Nike', 1, 'ชาย', '14 - 18 ปี', 2999.00, 'images/nike.jpg', 4.5, 'สีดำ', NULL, 'Nike'),
+('รองเท้า Adidas', 1, 'ชาย', '19 - 25 ปี', 2590.00, 'images/adidas.jpg', 4.2, 'สีดำ', NULL, 'Adidas'),
+('รองเท้า Converse', 1, 'ชาย', '26 - 35 ปี', 1890.00, 'images/converse.jpg', 4.8, 'สีดำ', NULL, 'Converse');
 
 
 -- ตารางตัวกรอง (ช่วงอายุและราคา)

@@ -11,6 +11,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $category_id = intval($_POST['category_id']);
   $price = trim($_POST['price']);
   $review_rating = floatval($_POST['review_rating']); // รับค่าคะแนนรีวิว
+  $color = trim($_POST['color']);
+  $brand = trim($_POST['brand']);
 
   if (!empty($name) && !empty($category_id) && !empty($price) && isset($_FILES['image'])) {
     $target_dir = "images/"; // โฟลเดอร์เก็บรูป
@@ -34,8 +36,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       // อัปโหลดไฟล์
       if (move_uploaded_file($_FILES["image"]["tmp_name"], $target_file)) {
         // บันทึกลงฐานข้อมูล พร้อมคะแนนรีวิว
-        $stmt = $pdo->prepare("INSERT INTO products (name, category_id, price, image, review_rating) VALUES (?, ?, ?, ?, ?)");
-        $stmt->execute([$name, $category_id, $price, $target_file, $review_rating]);
+        $stmt = $pdo->prepare("INSERT INTO products (name, category_id, price, image, review_rating, color, brand) VALUES (?, ?, ?, ?, ?, ?, ?)");
+        $stmt->execute([$name, $category_id, $price, $target_file, $review_rating, $color, $brand]);
 
         $message = "เพิ่มสินค้าสำเร็จ!";
       } else {
@@ -76,6 +78,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <button type="button" class="clear-btn" onclick="clearInput('name')">✖</button>
       </div>
 
+      <!-- แบรนด์ -->
+      <label for="brand">แบรนด์:</label>
+      <div class="input-group">
+        <input type="text" id="brand" name="brand" required>
+        <button type="button" class="clear-btn" onclick="clearInput('brand')">✖</button>
+      </div>
+
       <!-- หมวดหมู่ -->
       <label for="category_id">หมวดหมู่:</label>
       <select id="category_id" name="category_id" required>
@@ -88,15 +97,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <!-- ราคา -->
       <label for="price">ราคา:</label>
       <div class="input-group">
-        <input type="number" id="price" name="price" step="0.01" required>
+        <input type="number" id="price" name="price" step="1" min="0" max="100000" required>
         <!-- <button type="button" class="clear-btn" onclick="clearInput('price')">✖</button> -->
       </div>
 
       <!-- คะแนนรีวิว -->
       <label for="review_rating">คะแนนรีวิวเริ่มต้น (0 - 5 ดาว):</label>
       <div class="input-group">
-        <input type="number" id="review_rating" name="review_rating" step="0.1" min="0" max="5" required>
-        <button type="button" class="clear-btn" onclick="clearInput('review_rating')">✖</button>
+        <input type="number" id="review_rating" name="review_rating" step="1" min="0" max="5" required>
+        <!-- <button type="button" class="clear-btn" onclick="clearInput('review_rating')">✖</button> -->
+      </div>
+
+      <!-- สี -->
+      <label for="color">สี:</label>
+      <div class="input-group">
+        <input type="text" id="color" name="color" required>
+        <button type="button" class="clear-btn" onclick="clearInput('color')">✖</button>
       </div>
 
       <!-- อัปโหลดรูปภาพ -->

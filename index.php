@@ -1,10 +1,39 @@
 <?php
 require 'db.php';
 
-// ดึงข้อมูลสินค้า
-$query = $pdo->query("SELECT * FROM products");
+// 1️⃣ ดึงสินค้าที่ผู้ใช้กด "ถูกใจ"
+$likedQuery = $pdo->query("
+    SELECT DISTINCT brand, color 
+    FROM products 
+    WHERE preference = 'like'
+");
+$likedProducts = $likedQuery->fetchAll(PDO::FETCH_ASSOC);
+
+if ($likedProducts) {
+    // 2️⃣ ดึงแบรนด์และสีของสินค้าที่ถูกกด Like
+    $likedBrands = array_unique(array_column($likedProducts, 'brand'));
+    $likedColors = array_unique(array_column($likedProducts, 'color'));
+
+    // 3️⃣ Query แสดงสินค้าแนะนำที่มี Brand และ Color เดียวกัน
+    $sql = "
+        SELECT * FROM products 
+        WHERE brand IN (" . implode(',', array_fill(0, count($likedBrands), '?')) . ") 
+        OR color IN (" . implode(',', array_fill(0, count($likedColors), '?')) . ") 
+        ORDER BY created_at DESC
+    ";
+    $params = array_merge($likedBrands, $likedColors);
+} else {
+    // 4️⃣ ถ้ายังไม่มีการกด Like → แสดงสินค้าทั้งหมด
+    $sql = "SELECT * FROM products ORDER BY created_at DESC";
+    $params = [];
+}
+
+// 5️⃣ เตรียมและรันคำสั่ง SQL
+$query = $pdo->prepare($sql);
+$query->execute($params);
 $products = $query->fetchAll(PDO::FETCH_ASSOC);
 ?>
+
 
 <!DOCTYPE html>
 <html lang="th">
@@ -51,16 +80,21 @@ $products = $query->fetchAll(PDO::FETCH_ASSOC);
         </div>
 
         <!-- สินค้าแนะนำ -->
-        <div class="recommended-products">
-            <h2>สินค้าแนะนำ</h2>
-            <?php foreach ($products as $product): ?>
-                <div class="product-card">
-                    <img src="<?= htmlspecialchars($product['image']) ?>" alt="<?= htmlspecialchars($product['name']) ?>">
-                    <h3><?= htmlspecialchars($product['name']) ?></h3>
-                    <p><?= htmlspecialchars($product['price']) ?> THB</p>
-                </div>
-            <?php endforeach; ?>
-        </div>
+<div class="recommended-products">
+    <h2>สินค้าแนะนำ</h2>
+    <?php if (!empty($products)): ?>
+        <?php foreach ($products as $product): ?>
+            <div class="product-card">
+                <img src="<?= htmlspecialchars($product['image']) ?>" alt="<?= htmlspecialchars($product['name']) ?>">
+                <h3><?= htmlspecialchars($product['name']) ?></h3>
+                <p><?= number_format($product['price'], 2) ?> THB</p>
+            </div>
+        <?php endforeach; ?>
+    <?php else: ?>
+        <p class="no-results">ยังไม่มีสินค้าแนะนำ</p>
+    <?php endif; ?>
+</div>
+
     </div>
 
     <script>

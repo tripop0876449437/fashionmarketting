@@ -10,8 +10,14 @@ $filtersQuery = $pdo->query("SELECT * FROM filters");
 $filters = $filtersQuery->fetchAll(PDO::FETCH_ASSOC);
 
 // แยกค่า age_range และ price ออกจาก filters
-$ageRanges = $filters ? array_column($filters, 'age_range') : ['ไม่มีข้อมูลช่วงอายุ'];
-$prices = $filters ? array_column($filters, 'price') : ['ไม่มีข้อมูลราคา'];
+$ageRanges = $pdo->query("SELECT DISTINCT age_range FROM products WHERE age_range IS NOT NULL AND age_range <> ''");
+$ageRanges = $ageRanges->fetchAll(PDO::FETCH_COLUMN);
+
+$prices = $pdo->query("SELECT DISTINCT price FROM products WHERE price IS NOT NULL AND price <> ''");
+$prices = $prices->fetchAll(PDO::FETCH_COLUMN);
+
+$colors = $pdo->query("SELECT DISTINCT color FROM products WHERE color IS NOT NULL AND color <> ''");
+$colors = $colors->fetchAll(PDO::FETCH_COLUMN);
 
 // คำสั่ง SQL พื้นฐาน (แสดงสินค้าทั้งหมด)
 $sql = "
@@ -35,13 +41,26 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $conditions[] = "products.gender = :gender";
         $params['gender'] = $_POST['gender'];
     }
-    if (!empty($_POST['age_range'])) {
-        $conditions[] = "products.age_range = :age_range";
-        $params['age_range'] = $_POST['age_range'];
+    if (!empty($_POST['price_range'])) {
+        $priceRange = $_POST['price_range'];
+
+        if ($priceRange === "5000+") {
+            $conditions[] = "products.price >= :min_price";
+            $params['min_price'] = 5000;
+        } else {
+            list($min, $max) = explode('-', $priceRange);
+            $conditions[] = "products.price BETWEEN :min_price AND :max_price";
+            $params['min_price'] = $min;
+            $params['max_price'] = $max;
+        }
     }
     if (!empty($_POST['price'])) {
         $conditions[] = "products.price <= :price";
         $params['price'] = preg_replace('/[^0-9.]/', '', $_POST['price']);
+    }
+    if (!empty($_POST['color'])) {
+        $conditions[] = "products.color = :color";
+        $params['color'] = $_POST['color'];
     }
 }
 
@@ -107,6 +126,19 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 </select>
             </div>
 
+            <!-- สี -->
+            <div class="form-group">
+                <label for="price_range">ช่วงราคา:</label>
+                <select id="price_range" name="price_range">
+                    <option value="">-- แสดงทั้งหมด --</option>
+                    <option value="0-500">ต่ำกว่า 500 บาท</option>
+                    <option value="500-1000">500 - 1,000 บาท</option>
+                    <option value="1000-5000">1,000 - 5,000 บาท</option>
+                    <option value="5000+">5,000 บาทขึ้นไป</option>
+                </select>
+            </div>
+
+
             <!-- เพศ -->
             <div class="form-group">
                 <label for="gender">เพศ:</label>
@@ -131,19 +163,6 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 </select>
             </div>
 
-            <!-- ราคา -->
-            <div class="form-group">
-                <label for="price">ราคา:</label>
-                <select id="price" name="price">
-                    <option value="">-- แสดงทั้งหมด --</option>
-                    <?php foreach ($prices as $price): ?>
-                        <option value="<?= htmlspecialchars($price) ?>">
-                            <?= htmlspecialchars($price) ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
-
             <!-- ปุ่ม -->
             <div class="form-buttons">
                 <button type="submit" class="btn-submit">ตกลง</button>
@@ -160,10 +179,23 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <div class="product-card">
                         <img src="<?= htmlspecialchars($product['image']) ?>" alt="<?= htmlspecialchars($product['name']) ?>" width="100%">
                         <h3><?= htmlspecialchars($product['name']) ?></h3>
+                        <p>สี: <?= htmlspecialchars($product['color']) ?></p>
                         <p>หมวดหมู่: <?= htmlspecialchars($product['category_name']) ?></p>
                         <p>ราคา: <?= number_format($product['price'], 2) ?> บาท</p>
                         <p>คะแนนรีวิวเริ่มต้น: <?= str_repeat('⭐', round($product['review_rating'])) ?></p>
 
+                        <!-- ปุ่มถูกใจ / ไม่ถูกใจ -->
+                        <form action="update_preference.php" method="POST" class="preference-form">
+                            <input type="hidden" name="product_id" value="<?= $product['id'] ?>">
+
+                            <button type="submit" name="preference" value="like" class="like-btn">
+                                ❤️ ถูกใจ
+                            </button>
+
+                            <button type="submit" name="preference" value="disliked" class="dislike-btn">
+                                👎 ไม่ถูกใจ
+                            </button>
+                        </form>
                     </div>
                 <?php endforeach; ?>
             <?php else: ?>
